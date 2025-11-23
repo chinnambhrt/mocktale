@@ -108,7 +108,7 @@ const ApiDetails = () => {
                     </a>
                     <button
                         onClick={handleSave}
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand hover:bg-brand-dark"
                     >
                         <Save className="w-4 h-4 mr-2" />
                         Save Changes
@@ -124,7 +124,7 @@ const ApiDetails = () => {
                             <input
                                 type="text"
                                 required
-                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand sm:text-sm p-2 border"
                                 value={api.name}
                                 onChange={(e) => setApi({ ...api, name: e.target.value })}
                             />
@@ -134,7 +134,7 @@ const ApiDetails = () => {
                             <input
                                 type="text"
                                 required
-                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand sm:text-sm p-2 border"
                                 value={api.endpoint}
                                 onChange={(e) => setApi({ ...api, endpoint: e.target.value })}
                             />
@@ -142,7 +142,7 @@ const ApiDetails = () => {
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Method</label>
                             <select
-                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand sm:text-sm p-2 border"
                                 value={api.method}
                                 onChange={(e) => setApi({ ...api, method: e.target.value })}
                             >
@@ -158,7 +158,7 @@ const ApiDetails = () => {
                             <input
                                 type="number"
                                 required
-                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand sm:text-sm p-2 border"
                                 value={api.response_status}
                                 onChange={(e) => setApi({ ...api, response_status: parseInt(e.target.value) })}
                             />
@@ -197,7 +197,7 @@ const ApiDetails = () => {
                                     </button>
                                 </div>
                             </div>
-                            <div className="border border-gray-300 rounded-md shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 overflow-hidden">
+                            <div className="border border-gray-300 rounded-md shadow-sm focus-within:border-brand focus-within:ring-1 focus-within:ring-brand overflow-hidden">
                                 <Editor
                                     value={api.response_body}
                                     onValueChange={code => setApi({ ...api, response_body: code })}

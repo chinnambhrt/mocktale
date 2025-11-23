@@ -12,14 +12,6 @@ import Layout from '../components/Layout';
 const ProjectDetails = () => {
     const { id } = useParams();
     const [apis, setApis] = useState([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newApi, setNewApi] = useState({
-        name: '',
-        method: 'GET',
-        endpoint: '',
-        response_status: 200,
-        response_body: '{}'
-    });
 
     useEffect(() => {
         fetchApis();
@@ -31,36 +23,6 @@ const ProjectDetails = () => {
             setApis(response.data);
         } catch (error) {
             console.error('Error fetching APIs:', error);
-        }
-    };
-
-    const handleCreateApi = async (e) => {
-        e.preventDefault();
-        try {
-            let parsedBody;
-            try {
-                parsedBody = JSON.parse(newApi.response_body);
-            } catch (e) {
-                alert('Invalid JSON in response body');
-                return;
-            }
-
-            await axios.post('http://localhost:3000/apis', {
-                project_id: id,
-                ...newApi,
-                response_body: parsedBody
-            });
-            setIsModalOpen(false);
-            setNewApi({
-                name: '',
-                method: 'GET',
-                endpoint: '',
-                response_status: 200,
-                response_body: '{}'
-            });
-            fetchApis();
-        } catch (error) {
-            console.error('Error creating API:', error);
         }
     };
 
@@ -147,13 +109,13 @@ const ProjectDetails = () => {
                         <Download className="w-4 h-4 mr-2" />
                         Export
                     </button>
-                    <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
+                    <Link
+                        to={`/project/${id}/apis/new`}
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand hover:bg-brand-dark"
                     >
                         <Plus className="w-4 h-4 mr-2" />
                         New API
-                    </button>
+                    </Link>
                 </div>
             </div>
 
@@ -168,7 +130,7 @@ const ProjectDetails = () => {
                                             {api.method}
                                         </span>
                                         <div className="min-w-0 flex-1">
-                                            <p className="text-sm font-medium text-indigo-600 truncate">{api.name}</p>
+                                            <p className="text-sm font-medium text-brand truncate">{api.name}</p>
                                             <p className="text-sm text-gray-500 truncate">{api.endpoint}</p>
                                         </div>
                                     </Link>
@@ -178,7 +140,7 @@ const ProjectDetails = () => {
                                         href={`http://localhost:3000/mock/${id}${api.endpoint}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-sm text-gray-500 hover:text-indigo-600 flex items-center"
+                                        className="text-sm text-gray-500 hover:text-brand flex items-center"
                                     >
                                         <Code className="w-4 h-4 mr-1" />
                                         Test
@@ -200,128 +162,6 @@ const ProjectDetails = () => {
                     )}
                 </ul>
             </div>
-
-            {isModalOpen && (
-                <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-lg max-w-lg w-full p-6">
-                        <h2 className="text-xl font-semibold mb-4">Create New API</h2>
-                        <form onSubmit={handleCreateApi}>
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                                <input
-                                    type="text"
-                                    required
-                                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
-                                    value={newApi.name}
-                                    onChange={(e) => setNewApi({ ...newApi, name: e.target.value })}
-                                />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Method</label>
-                                    <select
-                                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
-                                        value={newApi.method}
-                                        onChange={(e) => setNewApi({ ...newApi, method: e.target.value })}
-                                    >
-                                        <option>GET</option>
-                                        <option>POST</option>
-                                        <option>PUT</option>
-                                        <option>DELETE</option>
-                                        <option>PATCH</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Status Code</label>
-                                    <input
-                                        type="number"
-                                        required
-                                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
-                                        value={newApi.response_status}
-                                        onChange={(e) => setNewApi({ ...newApi, response_status: parseInt(e.target.value) })}
-                                    />
-                                </div>
-                            </div>
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Endpoint</label>
-                                <input
-                                    type="text"
-                                    required
-                                    placeholder="/users"
-                                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
-                                    value={newApi.endpoint}
-                                    onChange={(e) => setNewApi({ ...newApi, endpoint: e.target.value })}
-                                />
-                            </div>
-                            <div className="mb-6">
-                                <div className="flex justify-between items-center mb-1">
-                                    <label className="block text-sm font-medium text-gray-700">Response Body (JSON)</label>
-                                    <div className="space-x-2">
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                try {
-                                                    const formatted = JSON.stringify(JSON.parse(newApi.response_body), null, 2);
-                                                    setNewApi({ ...newApi, response_body: formatted });
-                                                } catch (e) {
-                                                    alert('Invalid JSON: ' + e.message);
-                                                }
-                                            }}
-                                            className="text-xs px-2 py-1 border border-gray-300 rounded hover:bg-gray-50 text-gray-600"
-                                        >
-                                            Format
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                try {
-                                                    JSON.parse(newApi.response_body);
-                                                    alert('Valid JSON');
-                                                } catch (e) {
-                                                    alert('Invalid JSON: ' + e.message);
-                                                }
-                                            }}
-                                            className="text-xs px-2 py-1 border border-gray-300 rounded hover:bg-gray-50 text-gray-600"
-                                        >
-                                            Validate
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className="border border-gray-300 rounded-md shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 overflow-hidden">
-                                    <Editor
-                                        value={newApi.response_body}
-                                        onValueChange={code => setNewApi({ ...newApi, response_body: code })}
-                                        highlight={code => highlight(code, languages.js)}
-                                        padding={10}
-                                        style={{
-                                            fontFamily: '"Fira code", "Fira Mono", monospace',
-                                            fontSize: 14,
-                                            minHeight: '150px',
-                                            backgroundColor: '#f9fafb'
-                                        }}
-                                        textareaClassName="focus:outline-none"
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex justify-end space-x-3">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700"
-                                >
-                                    Create
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
         </Layout>
     );
 };
