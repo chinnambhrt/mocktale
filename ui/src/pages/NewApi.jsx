@@ -63,8 +63,8 @@ const NewApi = () => {
                     <h1 className="text-2xl font-semibold text-gray-900">Create New API</h1>
                 </div>
 
-                <div className="bg-white shadow rounded-lg p-6">
-                    <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit}>
+                    <div className="bg-white shadow rounded-lg p-6 mb-6">
                         <Accordion title="General & Response Configuration" defaultOpen={true}>
                             <div className="mb-4">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
@@ -132,7 +132,9 @@ const NewApi = () => {
                                 />
                             </div>
                         </Accordion>
+                    </div>
 
+                    <div className="bg-white shadow rounded-lg p-6 mb-6">
                         <Accordion title="Request Validation & Matching" defaultOpen={false}>
                             <div className="grid grid-cols-2 gap-4 mb-4">
                                 <div>
@@ -200,25 +202,25 @@ const NewApi = () => {
                                 )}
                             </div>
                         </Accordion>
+                    </div>
 
-                        <div className="flex justify-end space-x-3">
-                            <Link
-                                to={`/project/${projectId}`}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                            >
-                                Cancel
-                            </Link>
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#7E4F1F] hover:bg-[#643f19] disabled:opacity-50"
-                            >
-                                <Save className="w-4 h-4 mr-2" />
-                                {loading ? 'Creating...' : 'Create API'}
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    <div className="flex justify-end space-x-3">
+                        <Link
+                            to={`/project/${projectId}`}
+                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                        >
+                            Cancel
+                        </Link>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#7E4F1F] hover:bg-[#643f19] disabled:opacity-50"
+                        >
+                            <Save className="w-4 h-4 mr-2" />
+                            {loading ? 'Creating...' : 'Create API'}
+                        </button>
+                    </div>
+                </form>
             </div>
         </Layout>
     );
