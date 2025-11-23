@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Plus, Trash2, Code, Download, Upload, ArrowLeft } from 'lucide-react';
+import Editor from 'react-simple-code-editor';
+import { highlight, languages } from 'prismjs/components/prism-core';
+import 'prismjs/components/prism-clike';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/themes/prism.css';
 import Layout from '../components/Layout';
 
 const ProjectDetails = () => {
@@ -249,13 +254,54 @@ const ProjectDetails = () => {
                                 />
                             </div>
                             <div className="mb-6">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Response Body (JSON)</label>
-                                <textarea
-                                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border font-mono"
-                                    rows="5"
-                                    value={newApi.response_body}
-                                    onChange={(e) => setNewApi({ ...newApi, response_body: e.target.value })}
-                                />
+                                <div className="flex justify-between items-center mb-1">
+                                    <label className="block text-sm font-medium text-gray-700">Response Body (JSON)</label>
+                                    <div className="space-x-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                try {
+                                                    const formatted = JSON.stringify(JSON.parse(newApi.response_body), null, 2);
+                                                    setNewApi({ ...newApi, response_body: formatted });
+                                                } catch (e) {
+                                                    alert('Invalid JSON: ' + e.message);
+                                                }
+                                            }}
+                                            className="text-xs px-2 py-1 border border-gray-300 rounded hover:bg-gray-50 text-gray-600"
+                                        >
+                                            Format
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                try {
+                                                    JSON.parse(newApi.response_body);
+                                                    alert('Valid JSON');
+                                                } catch (e) {
+                                                    alert('Invalid JSON: ' + e.message);
+                                                }
+                                            }}
+                                            className="text-xs px-2 py-1 border border-gray-300 rounded hover:bg-gray-50 text-gray-600"
+                                        >
+                                            Validate
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="border border-gray-300 rounded-md shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 overflow-hidden">
+                                    <Editor
+                                        value={newApi.response_body}
+                                        onValueChange={code => setNewApi({ ...newApi, response_body: code })}
+                                        highlight={code => highlight(code, languages.js)}
+                                        padding={10}
+                                        style={{
+                                            fontFamily: '"Fira code", "Fira Mono", monospace',
+                                            fontSize: 14,
+                                            minHeight: '150px',
+                                            backgroundColor: '#f9fafb'
+                                        }}
+                                        textareaClassName="focus:outline-none"
+                                    />
+                                </div>
                             </div>
                             <div className="flex justify-end space-x-3">
                                 <button
