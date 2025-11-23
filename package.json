@@ -1,0 +1,14 @@
+{
+    "name": "mocktale-root",
+    "version": "1.0.0",
+    "description": "Root package for Mocktale",
+    "scripts": {
+        "start": "concurrently \"npm run start:service\" \"npm run start:ui\"",
+        "start:service": "cd service && npm start",
+        "start:ui": "cd ui && npm run dev",
+        "install:all": "npm install && cd service && npm install && cd ui && npm install"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    }
+}
