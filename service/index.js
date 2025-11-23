@@ -22,18 +22,21 @@ app.use('/apis', apisRouter);
 // Mocking Endpoint
 const Ajv = require('ajv');
 const ajv = new Ajv();
+const { match } = require('path-to-regexp');
 
 app.all('/mock/:projectId/*', (req, res) => {
     const projectId = req.params.projectId;
     const apiPath = '/' + req.params[0];
     const method = req.method;
     const requestBody = req.body;
+    const requestHeaders = req.headers;
 
     console.log(`Mocking request: Project ${projectId}, Method ${method}, Path ${apiPath}`);
 
+    // Fetch ALL APIs for this project and method (we can't filter by endpoint in SQL anymore due to patterns)
     db.all(
-        'SELECT * FROM apis WHERE project_id = ? AND endpoint = ? AND method = ?',
-        [projectId, apiPath, method],
+        'SELECT * FROM apis WHERE project_id = ? AND method = ?',
+        [projectId, method],
         (err, rows) => {
             if (err) {
                 res.status(500).json({ error: err.message });
@@ -46,43 +49,84 @@ app.all('/mock/:projectId/*', (req, res) => {
 
             // Find the best matching API
             let matchedApi = null;
+            let capturedParams = {};
 
             for (const api of rows) {
-                if (api.request_match_type === 'NONE' || !api.request_match_type) {
-                    matchedApi = api;
-                    break; // Default match if no specific match required
-                } else if (api.request_match_type === 'EXACT') {
+                // 1. Path Matching
+                const fn = match(api.endpoint, { decode: decodeURIComponent });
+                const result = fn(apiPath);
+
+                if (!result) continue; // Path doesn't match
+
+                // 2. Header Validation
+                let headersValid = true;
+                try {
+                    const requiredHeaders = JSON.parse(api.required_headers || '{}');
+                    for (const [key, value] of Object.entries(requiredHeaders)) {
+                        if (!requestHeaders[key.toLowerCase()] || requestHeaders[key.toLowerCase()] !== value) {
+                            headersValid = false;
+                            break;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error parsing required_headers', e);
+                }
+                if (!headersValid) continue;
+
+                // 3. Path Param Validation (if specific values are required)
+                let paramsValid = true;
+                try {
+                    const requiredPathParams = JSON.parse(api.required_path_params || '{}');
+                    for (const [key, value] of Object.entries(requiredPathParams)) {
+                        if (result.params[key] !== value) {
+                            paramsValid = false;
+                            break;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error parsing required_path_params', e);
+                }
+                if (!paramsValid) continue;
+
+                // 4. Request Body Matching
+                let bodyValid = true;
+                if (api.request_match_type === 'EXACT') {
                     try {
                         const expectedBody = JSON.parse(api.request_body_match);
-                        // Simple deep equal check (naive implementation for JSON)
-                        if (JSON.stringify(requestBody) === JSON.stringify(expectedBody)) {
-                            matchedApi = api;
-                            break;
+                        if (JSON.stringify(requestBody) !== JSON.stringify(expectedBody)) {
+                            bodyValid = false;
                         }
                     } catch (e) {
                         console.error('Invalid JSON in request_body_match for EXACT match');
+                        bodyValid = false;
                     }
                 } else if (api.request_match_type === 'SCHEMA') {
                     try {
                         const schema = JSON.parse(api.request_body_match);
                         const validate = ajv.compile(schema);
-                        if (validate(requestBody)) {
-                            matchedApi = api;
-                            break;
+                        if (!validate(requestBody)) {
+                            bodyValid = false;
                         }
                     } catch (e) {
                         console.error('Invalid JSON Schema or validation error');
+                        bodyValid = false;
                     }
+                }
+
+                if (bodyValid) {
+                    matchedApi = api;
+                    capturedParams = result.params;
+                    break; // Found a match!
                 }
             }
 
             if (!matchedApi) {
-                // If we found candidates but none matched the request body criteria
-                res.status(400).json({ error: 'No matching API found for the provided request body' });
+                res.status(404).json({ error: 'No matching API found for the provided request criteria' });
                 return;
             }
 
             try {
+                // TODO: We could potentially inject capturedParams into the response body here if needed
                 const responseBody = JSON.parse(matchedApi.response_body);
                 res.status(matchedApi.response_status).json(responseBody);
             } catch (e) {

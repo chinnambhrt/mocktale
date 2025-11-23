@@ -32,7 +32,7 @@ router.get('/:id', (req, res) => {
 
 // Create an API
 router.post('/', (req, res) => {
-    const { project_id, name, method, endpoint, response_body, response_status, request_match_type, request_body_match } = req.body;
+    const { project_id, name, method, endpoint, response_body, response_status, request_match_type, request_body_match, required_headers, required_path_params } = req.body;
     if (!project_id || !name || !method || !endpoint) {
         res.status(400).json({ error: 'Project ID, Name, Method, and Endpoint are required' });
         return;
@@ -41,25 +41,25 @@ router.post('/', (req, res) => {
     // Ensure endpoint starts with /
     const formattedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
 
-    const sql = 'INSERT INTO apis (project_id, name, method, endpoint, response_body, response_status, request_match_type, request_body_match) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-    db.run(sql, [project_id, name, method, formattedEndpoint, JSON.stringify(response_body), response_status || 200, request_match_type || 'NONE', request_body_match], function (err) {
+    const sql = 'INSERT INTO apis (project_id, name, method, endpoint, response_body, response_status, request_match_type, request_body_match, required_headers, required_path_params) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    db.run(sql, [project_id, name, method, formattedEndpoint, JSON.stringify(response_body), response_status || 200, request_match_type || 'NONE', request_body_match, JSON.stringify(required_headers || {}), JSON.stringify(required_path_params || {})], function (err) {
         if (err) {
             res.status(500).json({ error: err.message });
             return;
         }
-        res.json({ id: this.lastID, project_id, name, method, endpoint: formattedEndpoint, response_body, response_status, request_match_type, request_body_match });
+        res.json({ id: this.lastID, project_id, name, method, endpoint: formattedEndpoint, response_body, response_status, request_match_type, request_body_match, required_headers, required_path_params });
     });
 });
 
 // Update an API
 router.put('/:id', (req, res) => {
     const { id } = req.params;
-    const { name, method, endpoint, response_body, response_status, request_match_type, request_body_match } = req.body;
+    const { name, method, endpoint, response_body, response_status, request_match_type, request_body_match, required_headers, required_path_params } = req.body;
 
     const formattedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
 
-    const sql = `UPDATE apis SET name = ?, method = ?, endpoint = ?, response_body = ?, response_status = ?, request_match_type = ?, request_body_match = ? WHERE id = ?`;
-    db.run(sql, [name, method, formattedEndpoint, JSON.stringify(response_body), response_status, request_match_type, request_body_match, id], function (err) {
+    const sql = `UPDATE apis SET name = ?, method = ?, endpoint = ?, response_body = ?, response_status = ?, request_match_type = ?, request_body_match = ?, required_headers = ?, required_path_params = ? WHERE id = ?`;
+    db.run(sql, [name, method, formattedEndpoint, JSON.stringify(response_body), response_status, request_match_type, request_body_match, JSON.stringify(required_headers || {}), JSON.stringify(required_path_params || {}), id], function (err) {
         if (err) {
             res.status(500).json({ error: err.message });
             return;

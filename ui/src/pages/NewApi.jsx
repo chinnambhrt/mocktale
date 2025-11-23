@@ -20,18 +20,22 @@ const NewApi = () => {
         response_status: 200,
         response_body: '{}',
         request_match_type: 'NONE',
-        request_body_match: ''
+        request_body_match: '',
+        required_headers: '{}',
+        required_path_params: '{}'
     });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
-            let parsedBody;
+            let parsedBody, parsedHeaders, parsedParams;
             try {
                 parsedBody = JSON.parse(newApi.response_body);
+                parsedHeaders = JSON.parse(newApi.required_headers || '{}');
+                parsedParams = JSON.parse(newApi.required_path_params || '{}');
             } catch (e) {
-                alert('Invalid JSON in response body');
+                alert('Invalid JSON in body, headers, or params');
                 setLoading(false);
                 return;
             }
@@ -39,7 +43,9 @@ const NewApi = () => {
             await axios.post('http://localhost:3000/apis', {
                 project_id: projectId,
                 ...newApi,
-                response_body: parsedBody
+                response_body: parsedBody,
+                required_headers: parsedHeaders,
+                required_path_params: parsedParams
             });
             navigate(`/project/${projectId}`);
         } catch (error) {
@@ -103,11 +109,53 @@ const NewApi = () => {
                             <input
                                 type="text"
                                 required
-                                placeholder="/users"
+                                placeholder="/users/:id"
                                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#7E4F1F] focus:ring-[#7E4F1F] sm:text-sm p-2 border"
                                 value={newApi.endpoint}
                                 onChange={(e) => setNewApi({ ...newApi, endpoint: e.target.value })}
                             />
+                            <p className="mt-1 text-xs text-gray-500">Use :param for dynamic segments (e.g., /users/:id)</p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Required Headers (JSON)</label>
+                                <div className="border border-gray-300 rounded-md shadow-sm focus-within:border-[#7E4F1F] focus-within:ring-1 focus-within:ring-[#7E4F1F] overflow-hidden">
+                                    <Editor
+                                        value={newApi.required_headers}
+                                        onValueChange={code => setNewApi({ ...newApi, required_headers: code })}
+                                        highlight={code => highlight(code, languages.js)}
+                                        padding={10}
+                                        style={{
+                                            fontFamily: '"Fira code", "Fira Mono", monospace',
+                                            fontSize: 12,
+                                            minHeight: '100px',
+                                            backgroundColor: '#f9fafb'
+                                        }}
+                                        textareaClassName="focus:outline-none"
+                                        placeholder='{"Authorization": "Bearer token"}'
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Required Path Params (JSON)</label>
+                                <div className="border border-gray-300 rounded-md shadow-sm focus-within:border-[#7E4F1F] focus-within:ring-1 focus-within:ring-[#7E4F1F] overflow-hidden">
+                                    <Editor
+                                        value={newApi.required_path_params}
+                                        onValueChange={code => setNewApi({ ...newApi, required_path_params: code })}
+                                        highlight={code => highlight(code, languages.js)}
+                                        padding={10}
+                                        style={{
+                                            fontFamily: '"Fira code", "Fira Mono", monospace',
+                                            fontSize: 12,
+                                            minHeight: '100px',
+                                            backgroundColor: '#f9fafb'
+                                        }}
+                                        textareaClassName="focus:outline-none"
+                                        placeholder='{"id": "123"}'
+                                    />
+                                </div>
+                            </div>
                         </div>
 
                         <div className="mb-6">

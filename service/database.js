@@ -29,6 +29,8 @@ db.serialize(() => {
     response_status INTEGER DEFAULT 200,
     request_match_type TEXT DEFAULT 'NONE', -- NONE, EXACT, SCHEMA
     request_body_match TEXT,
+    required_headers TEXT, -- JSON string of key-value pairs
+    required_path_params TEXT, -- JSON string of key-value pairs
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE
   )`);
