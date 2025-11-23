@@ -1,30 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import { Plus, Trash2, Code, Download, Upload, ArrowLeft } from 'lucide-react';
+import { Plus, Trash2, Code, Download, Upload, ArrowLeft, Search } from 'lucide-react';
 import Editor from 'react-simple-code-editor';
 import { highlight, languages } from 'prismjs/components/prism-core';
 import 'prismjs/components/prism-clike';
 import 'prismjs/components/prism-javascript';
 import 'prismjs/themes/prism.css';
 import Layout from '../components/Layout';
+import Shimmer from '../components/Shimmer';
 
 const ProjectDetails = () => {
     const { id } = useParams();
     const [apis, setApis] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterMethod, setFilterMethod] = useState('ALL');
 
     useEffect(() => {
         fetchApis();
     }, [id]);
 
     const fetchApis = async () => {
+        setLoading(true);
         try {
             const response = await axios.get(`http://localhost:3000/apis/project/${id}`);
             setApis(response.data);
         } catch (error) {
             console.error('Error fetching APIs:', error);
+        } finally {
+            setLoading(false);
         }
     };
+
+    const filteredApis = apis.filter(api => {
+        const matchesSearch = api.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            api.endpoint.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesMethod = filterMethod === 'ALL' || api.method === filterMethod;
+        return matchesSearch && matchesMethod;
+    });
 
     const handleDeleteApi = async (apiId) => {
         if (!window.confirm('Are you sure you want to delete this API?')) return;
@@ -119,49 +133,105 @@ const ProjectDetails = () => {
                 </div>
             </div>
 
-            <div className="bg-white shadow overflow-hidden sm:rounded-md">
-                <ul className="divide-y divide-gray-200">
-                    {apis.map((api) => (
-                        <li key={api.id}>
-                            <div className="px-4 py-4 sm:px-6 hover:bg-gray-50 flex items-center justify-between">
-                                <div className="flex items-center flex-1 min-w-0">
-                                    <Link to={`/api/${api.id}`} className="flex-1 flex items-center">
-                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${methodColors[api.method] || 'bg-gray-100 text-gray-800'} mr-4 w-16 justify-center`}>
+            <div className="mb-6 flex flex-col sm:flex-row gap-4">
+                <div className="relative flex-1">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Search className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                        type="text"
+                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-[#7E4F1F] focus:border-[#7E4F1F] sm:text-sm"
+                        placeholder="Search APIs..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                <div className="w-full sm:w-48">
+                    <select
+                        className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-[#7E4F1F] focus:border-[#7E4F1F] sm:text-sm rounded-md"
+                        value={filterMethod}
+                        onChange={(e) => setFilterMethod(e.target.value)}
+                    >
+                        <option value="ALL">All Methods</option>
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="DELETE">DELETE</option>
+                        <option value="PATCH">PATCH</option>
+                    </select>
+                </div>
+            </div>
+
+            {loading ? (
+                <Shimmer rows={5} columns={3} />
+            ) : (
+                <div className="bg-white shadow overflow-hidden sm:rounded-lg border border-gray-200">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                            <tr>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Method
+                                </th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Endpoint
+                                </th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Name
+                                </th>
+                                <th scope="col" className="relative px-6 py-3">
+                                    <span className="sr-only">Actions</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                            {filteredApis.map((api) => (
+                                <tr key={api.id} className="hover:bg-gray-50">
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${methodColors[api.method] || 'bg-gray-100 text-gray-800'} w-16 justify-center`}>
                                             {api.method}
                                         </span>
-                                        <div className="min-w-0 flex-1">
-                                            <p className="text-sm font-medium text-[#7E4F1F] truncate">{api.name}</p>
-                                            <p className="text-sm text-gray-500 truncate">{api.endpoint}</p>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <Link to={`/api/${api.id}`} className="text-sm text-gray-900 font-medium hover:text-[#7E4F1F]">
+                                            {api.endpoint}
+                                        </Link>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="text-sm text-gray-500">{api.name}</div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <div className="flex items-center justify-end space-x-4">
+                                            <a
+                                                href={`http://localhost:3000/mock/${id}${api.endpoint}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-gray-400 hover:text-[#7E4F1F] transition-colors"
+                                                title="Test Endpoint"
+                                            >
+                                                <Code className="w-5 h-5" />
+                                            </a>
+                                            <button
+                                                onClick={() => handleDeleteApi(api.id)}
+                                                className="text-gray-400 hover:text-red-600 transition-colors"
+                                                title="Delete API"
+                                            >
+                                                <Trash2 className="w-5 h-5" />
+                                            </button>
                                         </div>
-                                    </Link>
-                                </div>
-                                <div className="flex items-center space-x-4">
-                                    <a
-                                        href={`http://localhost:3000/mock/${id}${api.endpoint}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-sm text-gray-500 hover:text-[#7E4F1F] flex items-center"
-                                    >
-                                        <Code className="w-4 h-4 mr-1" />
-                                        Test
-                                    </a>
-                                    <button
-                                        onClick={() => handleDeleteApi(api.id)}
-                                        className="text-gray-400 hover:text-red-500"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </div>
-                        </li>
-                    ))}
-                    {apis.length === 0 && (
-                        <li className="px-4 py-8 text-center text-gray-500">
-                            No APIs found. Create one to get started.
-                        </li>
-                    )}
-                </ul>
-            </div>
+                                    </td>
+                                </tr>
+                            ))}
+                            {filteredApis.length === 0 && (
+                                <tr>
+                                    <td colSpan="4" className="px-6 py-10 text-center text-gray-500">
+                                        No APIs found matching your filters.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            )}
         </Layout>
     );
 };
