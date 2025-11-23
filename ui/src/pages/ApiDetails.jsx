@@ -2,14 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Save, ArrowLeft, Play } from 'lucide-react';
-import Editor from 'react-simple-code-editor';
-import { highlight, languages } from 'prismjs/components/prism-core';
-import 'prismjs/components/prism-clike';
-import 'prismjs/components/prism-javascript';
-import 'prismjs/themes/prism.css';
+import JsonEditor from '../components/JsonEditor';
 import Layout from '../components/Layout';
 
 const ApiDetails = () => {
+    // ... (keep imports and state setup)
     const { id } = useParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
@@ -127,41 +124,29 @@ const ApiDetails = () => {
                         <div className="grid grid-cols-2 gap-4 mb-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Required Headers (JSON)</label>
-                                <div className="border border-gray-300 rounded-md shadow-sm focus-within:border-[#7E4F1F] focus-within:ring-1 focus-within:ring-[#7E4F1F] overflow-hidden">
-                                    <Editor
-                                        value={api.required_headers || '{}'}
-                                        onValueChange={code => setApi({ ...api, required_headers: code })}
-                                        highlight={code => highlight(code, languages.js)}
-                                        padding={10}
-                                        style={{
-                                            fontFamily: '"Fira code", "Fira Mono", monospace',
-                                            fontSize: 12,
-                                            minHeight: '100px',
-                                            backgroundColor: '#f9fafb'
-                                        }}
-                                        textareaClassName="focus:outline-none"
-                                        placeholder='{"Authorization": "Bearer token"}'
-                                    />
-                                </div>
+                                <JsonEditor
+                                    value={api.required_headers || '{}'}
+                                    onChange={code => setApi({ ...api, required_headers: code })}
+                                    placeholder='{"Authorization": "Bearer token"}'
+                                    sample={`{
+  "Authorization": "Bearer <token>",
+  "Content-Type": "application/json"
+}`}
+                                    sampleTitle="Sample Headers"
+                                />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Required Path Params (JSON)</label>
-                                <div className="border border-gray-300 rounded-md shadow-sm focus-within:border-[#7E4F1F] focus-within:ring-1 focus-within:ring-[#7E4F1F] overflow-hidden">
-                                    <Editor
-                                        value={api.required_path_params || '{}'}
-                                        onValueChange={code => setApi({ ...api, required_path_params: code })}
-                                        highlight={code => highlight(code, languages.js)}
-                                        padding={10}
-                                        style={{
-                                            fontFamily: '"Fira code", "Fira Mono", monospace',
-                                            fontSize: 12,
-                                            minHeight: '100px',
-                                            backgroundColor: '#f9fafb'
-                                        }}
-                                        textareaClassName="focus:outline-none"
-                                        placeholder='{"id": "123"}'
-                                    />
-                                </div>
+                                <JsonEditor
+                                    value={api.required_path_params || '{}'}
+                                    onChange={code => setApi({ ...api, required_path_params: code })}
+                                    placeholder='{"id": "123"}'
+                                    sample={`{
+  "id": "123",
+  "category": "books"
+}`}
+                                    sampleTitle="Sample Path Params"
+                                />
                             </div>
                         </div>
 
@@ -179,74 +164,43 @@ const ApiDetails = () => {
                                 </select>
                             </div>
                             {api.request_match_type && api.request_match_type !== 'NONE' && (
-                                <div className="border border-gray-300 rounded-md shadow-sm focus-within:border-[#7E4F1F] focus-within:ring-1 focus-within:ring-[#7E4F1F] overflow-hidden mb-4">
-                                    <Editor
+                                <div className="mb-4">
+                                    <JsonEditor
                                         value={api.request_body_match || ''}
-                                        onValueChange={code => setApi({ ...api, request_body_match: code })}
-                                        highlight={code => highlight(code, languages.js)}
-                                        padding={10}
-                                        style={{
-                                            fontFamily: '"Fira code", "Fira Mono", monospace',
-                                            fontSize: 14,
-                                            minHeight: '150px',
-                                            backgroundColor: '#f9fafb'
-                                        }}
-                                        textareaClassName="focus:outline-none"
+                                        onChange={code => setApi({ ...api, request_body_match: code })}
+                                        minHeight="150px"
                                         placeholder={api.request_match_type === 'EXACT' ? 'Enter expected JSON body...' : 'Enter JSON Schema...'}
+                                        sample={api.request_match_type === 'EXACT' ? `{
+  "name": "John Doe",
+  "email": "john@example.com"
+}` : `{
+  "type": "object",
+  "properties": {
+    "name": { "type": "string" },
+    "age": { "type": "integer" }
+  },
+  "required": ["name"]
+}`}
+                                        sampleTitle={api.request_match_type === 'EXACT' ? 'Sample Request Body' : 'Sample JSON Schema'}
                                     />
                                 </div>
                             )}
                         </div>
 
                         <div className="mb-6">
-                            <div className="flex justify-between items-center mb-1">
-                                <label className="block text-sm font-medium text-gray-700">Response Body (JSON)</label>
-                                <div className="space-x-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            try {
-                                                const formatted = JSON.stringify(JSON.parse(api.response_body), null, 2);
-                                                setApi({ ...api, response_body: formatted });
-                                            } catch (e) {
-                                                alert('Invalid JSON: ' + e.message);
-                                            }
-                                        }}
-                                        className="text-xs px-2 py-1 border border-gray-300 rounded hover:bg-gray-50 text-gray-600"
-                                    >
-                                        Format
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            try {
-                                                JSON.parse(api.response_body);
-                                                alert('Valid JSON');
-                                            } catch (e) {
-                                                alert('Invalid JSON: ' + e.message);
-                                            }
-                                        }}
-                                        className="text-xs px-2 py-1 border border-gray-300 rounded hover:bg-gray-50 text-gray-600"
-                                    >
-                                        Validate
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="border border-gray-300 rounded-md shadow-sm focus-within:border-[#7E4F1F] focus-within:ring-1 focus-within:ring-[#7E4F1F] overflow-hidden">
-                                <Editor
-                                    value={api.response_body}
-                                    onValueChange={code => setApi({ ...api, response_body: code })}
-                                    highlight={code => highlight(code, languages.js)}
-                                    padding={10}
-                                    style={{
-                                        fontFamily: '"Fira code", "Fira Mono", monospace',
-                                        fontSize: 14,
-                                        minHeight: '200px',
-                                        backgroundColor: '#f9fafb'
-                                    }}
-                                    textareaClassName="focus:outline-none"
-                                />
-                            </div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Response Body (JSON)</label>
+                            <JsonEditor
+                                value={api.response_body}
+                                onChange={code => setApi({ ...api, response_body: code })}
+                                minHeight="200px"
+                                sample={`{
+  "id": 1,
+  "name": "John Doe",
+  "email": "john@example.com",
+  "roles": ["admin", "user"]
+}`}
+                                sampleTitle="Sample Response Body"
+                            />
                         </div>
                         <div className="flex justify-end space-x-3">
                             <Link
