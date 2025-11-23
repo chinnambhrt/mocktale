@@ -22,7 +22,23 @@ app.use('/apis', apisRouter);
 // Mocking Endpoint
 const Ajv = require('ajv');
 const ajv = new Ajv();
-const { match } = require('path-to-regexp');
+const pathToRegexp = require('path-to-regexp');
+
+// Helper function to match paths using v6 API
+function matchPath(pattern, path) {
+    const keys = [];
+    const regexp = pathToRegexp(pattern, keys);
+    const result = regexp.exec(path);
+
+    if (!result) return null;
+
+    const params = {};
+    keys.forEach((key, index) => {
+        params[key.name] = result[index + 1];
+    });
+
+    return { params };
+}
 
 app.all('/mock/:projectId/*', (req, res) => {
     const projectId = req.params.projectId;
@@ -53,8 +69,10 @@ app.all('/mock/:projectId/*', (req, res) => {
 
             for (const api of rows) {
                 // 1. Path Matching
-                const fn = match(api.endpoint, { decode: decodeURIComponent });
-                const result = fn(apiPath);
+                const result = matchPath(api.endpoint, apiPath);
+
+                console.log(`Checking API: ${api.endpoint} against ${apiPath}`);
+                console.log(`Match Result:`, result);
 
                 if (!result) continue; // Path doesn't match
 
@@ -72,21 +90,6 @@ app.all('/mock/:projectId/*', (req, res) => {
                     console.error('Error parsing required_headers', e);
                 }
                 if (!headersValid) continue;
-
-                // 3. Path Param Validation (if specific values are required)
-                let paramsValid = true;
-                try {
-                    const requiredPathParams = JSON.parse(api.required_path_params || '{}');
-                    for (const [key, value] of Object.entries(requiredPathParams)) {
-                        if (result.params[key] !== value) {
-                            paramsValid = false;
-                            break;
-                        }
-                    }
-                } catch (e) {
-                    console.error('Error parsing required_path_params', e);
-                }
-                if (!paramsValid) continue;
 
                 // 4. Request Body Matching
                 let bodyValid = true;

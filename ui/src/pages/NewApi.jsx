@@ -19,21 +19,19 @@ const NewApi = () => {
         response_body: '{}',
         request_match_type: 'NONE',
         request_body_match: '',
-        required_headers: '{}',
-        required_path_params: '{}'
+        required_headers: '{}'
     });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
-            let parsedBody, parsedHeaders, parsedParams;
+            let parsedBody, parsedHeaders;
             try {
                 parsedBody = JSON.parse(newApi.response_body);
                 parsedHeaders = JSON.parse(newApi.required_headers || '{}');
-                parsedParams = JSON.parse(newApi.required_path_params || '{}');
             } catch (e) {
-                alert('Invalid JSON in body, headers, or params');
+                alert('Invalid JSON in body or headers');
                 setLoading(false);
                 return;
             }
@@ -42,8 +40,7 @@ const NewApi = () => {
                 project_id: projectId,
                 ...newApi,
                 response_body: parsedBody,
-                required_headers: parsedHeaders,
-                required_path_params: parsedParams
+                required_headers: parsedHeaders
             });
             navigate(`/project/${projectId}`);
         } catch (error) {
@@ -148,19 +145,6 @@ const NewApi = () => {
   "Content-Type": "application/json"
 }`}
                                         sampleTitle="Sample Headers"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Required Path Params (JSON)</label>
-                                    <JsonEditor
-                                        value={newApi.required_path_params}
-                                        onChange={code => setNewApi({ ...newApi, required_path_params: code })}
-                                        placeholder='{"id": "123"}'
-                                        sample={`{
-  "id": "123",
-  "category": "books"
-}`}
-                                        sampleTitle="Sample Path Params"
                                     />
                                 </div>
                             </div>
