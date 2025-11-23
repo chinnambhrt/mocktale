@@ -111,7 +111,7 @@ const ProjectDetails = () => {
                     </button>
                     <Link
                         to={`/project/${id}/apis/new`}
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand hover:bg-brand-dark"
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#7E4F1F] hover:bg-[#643f19]"
                     >
                         <Plus className="w-4 h-4 mr-2" />
                         New API
@@ -130,7 +130,7 @@ const ProjectDetails = () => {
                                             {api.method}
                                         </span>
                                         <div className="min-w-0 flex-1">
-                                            <p className="text-sm font-medium text-brand truncate">{api.name}</p>
+                                            <p className="text-sm font-medium text-[#7E4F1F] truncate">{api.name}</p>
                                             <p className="text-sm text-gray-500 truncate">{api.endpoint}</p>
                                         </div>
                                     </Link>
@@ -140,7 +140,7 @@ const ProjectDetails = () => {
                                         href={`http://localhost:3000/mock/${id}${api.endpoint}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-sm text-gray-500 hover:text-brand flex items-center"
+                                        className="text-sm text-gray-500 hover:text-[#7E4F1F] flex items-center"
                                     >
                                         <Code className="w-4 h-4 mr-1" />
                                         Test

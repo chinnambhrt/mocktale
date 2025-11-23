@@ -37,7 +37,7 @@ const Dashboard = () => {
                 <h1 className="text-2xl font-semibold text-gray-900">Projects</h1>
                 <Link
                     to="/projects/new"
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand hover:bg-brand-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand"
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#7E4F1F] hover:bg-[#643f19] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7E4F1F]"
                 >
                     <Plus className="w-4 h-4 mr-2" />
                     New Project
@@ -53,7 +53,7 @@ const Dashboard = () => {
                     >
                         <div className="flex items-center justify-between mb-4">
                             <div className="p-2 bg-blue-50 rounded-lg">
-                                <Folder className="w-6 h-6 text-brand" />
+                                <Folder className="w-6 h-6 text-[#7E4F1F]" />
                             </div>
                             <button
                                 onClick={(e) => handleDeleteProject(project.id, e)}

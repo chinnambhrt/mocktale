@@ -13,13 +13,13 @@ const Layout = ({ children }) => {
                         <div className="flex">
                             <div className="flex-shrink-0 flex items-center">
                                 <img src="/mocktale.svg" alt="Mocktale" className="h-8 w-8 mr-2" />
-                                <span className="text-2xl font-bold text-brand-dark">Mocktale</span>
+                                <span className="text-2xl font-bold text-[#643f19]">Mocktale</span>
                             </div>
                             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                                 <Link
                                     to="/"
                                     className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${location.pathname === '/'
-                                        ? 'border-brand text-gray-900'
+                                        ? 'border-[#7E4F1F] text-gray-900'
                                         : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                                         }`}
                                 >

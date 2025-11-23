@@ -64,7 +64,7 @@ const NewApi = () => {
                             <input
                                 type="text"
                                 required
-                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand sm:text-sm p-2 border"
+                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#7E4F1F] focus:ring-[#7E4F1F] sm:text-sm p-2 border"
                                 value={newApi.name}
                                 onChange={(e) => setNewApi({ ...newApi, name: e.target.value })}
                                 placeholder="e.g., Get Users"
@@ -74,7 +74,7 @@ const NewApi = () => {
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Method</label>
                                 <select
-                                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand sm:text-sm p-2 border"
+                                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#7E4F1F] focus:ring-[#7E4F1F] sm:text-sm p-2 border"
                                     value={newApi.method}
                                     onChange={(e) => setNewApi({ ...newApi, method: e.target.value })}
                                 >
@@ -90,7 +90,7 @@ const NewApi = () => {
                                 <input
                                     type="number"
                                     required
-                                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand sm:text-sm p-2 border"
+                                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#7E4F1F] focus:ring-[#7E4F1F] sm:text-sm p-2 border"
                                     value={newApi.response_status}
                                     onChange={(e) => setNewApi({ ...newApi, response_status: parseInt(e.target.value) })}
                                 />
@@ -102,7 +102,7 @@ const NewApi = () => {
                                 type="text"
                                 required
                                 placeholder="/users"
-                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand sm:text-sm p-2 border"
+                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#7E4F1F] focus:ring-[#7E4F1F] sm:text-sm p-2 border"
                                 value={newApi.endpoint}
                                 onChange={(e) => setNewApi({ ...newApi, endpoint: e.target.value })}
                             />
@@ -141,7 +141,7 @@ const NewApi = () => {
                                     </button>
                                 </div>
                             </div>
-                            <div className="border border-gray-300 rounded-md shadow-sm focus-within:border-brand focus-within:ring-1 focus-within:ring-brand overflow-hidden">
+                            <div className="border border-gray-300 rounded-md shadow-sm focus-within:border-[#7E4F1F] focus-within:ring-1 focus-within:ring-[#7E4F1F] overflow-hidden">
                                 <Editor
                                     value={newApi.response_body}
                                     onValueChange={code => setNewApi({ ...newApi, response_body: code })}
@@ -167,7 +167,7 @@ const NewApi = () => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand hover:bg-brand-dark disabled:opacity-50"
+                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#7E4F1F] hover:bg-[#643f19] disabled:opacity-50"
                             >
                                 <Save className="w-4 h-4 mr-2" />
                                 {loading ? 'Creating...' : 'Create API'}

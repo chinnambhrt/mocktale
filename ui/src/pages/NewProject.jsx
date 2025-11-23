@@ -40,7 +40,7 @@ const NewProject = () => {
                             <input
                                 type="text"
                                 required
-                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand sm:text-sm p-2 border"
+                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#7E4F1F] focus:ring-[#7E4F1F] sm:text-sm p-2 border"
                                 value={project.name}
                                 onChange={(e) => setProject({ ...project, name: e.target.value })}
                                 placeholder="e.g., E-commerce API"
@@ -49,7 +49,7 @@ const NewProject = () => {
                         <div className="mb-6">
                             <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                             <textarea
-                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-brand focus:ring-brand sm:text-sm p-2 border"
+                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#7E4F1F] focus:ring-[#7E4F1F] sm:text-sm p-2 border"
                                 rows="4"
                                 value={project.description}
                                 onChange={(e) => setProject({ ...project, description: e.target.value })}
@@ -66,7 +66,7 @@ const NewProject = () => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand hover:bg-brand-dark disabled:opacity-50"
+                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#7E4F1F] hover:bg-[#643f19] disabled:opacity-50"
                             >
                                 <Save className="w-4 h-4 mr-2" />
                                 {loading ? 'Creating...' : 'Create Project'}
