@@ -14,6 +14,9 @@ export default {
                     yellow: '#f59e0b',  // Amber-500
                     text: '#111827',    // Gray-900
                 }
+            },
+            fontFamily: {
+                sans: ['Inter', 'sans-serif'],
             }
         },
     },
