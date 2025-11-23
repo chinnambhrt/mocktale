@@ -18,7 +18,9 @@ const NewApi = () => {
         method: 'GET',
         endpoint: '',
         response_status: 200,
-        response_body: '{}'
+        response_body: '{}',
+        request_match_type: 'NONE',
+        request_body_match: ''
     });
 
     const handleSubmit = async (e) => {
@@ -107,6 +109,40 @@ const NewApi = () => {
                                 onChange={(e) => setNewApi({ ...newApi, endpoint: e.target.value })}
                             />
                         </div>
+
+                        <div className="mb-6">
+                            <div className="flex justify-between items-center mb-1">
+                                <label className="block text-sm font-medium text-gray-700">Request Matching</label>
+                                <select
+                                    className="rounded-md border-gray-300 shadow-sm focus:border-[#7E4F1F] focus:ring-[#7E4F1F] sm:text-sm p-1 border"
+                                    value={newApi.request_match_type || 'NONE'}
+                                    onChange={(e) => setNewApi({ ...newApi, request_match_type: e.target.value })}
+                                >
+                                    <option value="NONE">No Matching (Any Body)</option>
+                                    <option value="EXACT">Exact Match (JSON)</option>
+                                    <option value="SCHEMA">Schema Match (JSON Schema)</option>
+                                </select>
+                            </div>
+                            {newApi.request_match_type && newApi.request_match_type !== 'NONE' && (
+                                <div className="border border-gray-300 rounded-md shadow-sm focus-within:border-[#7E4F1F] focus-within:ring-1 focus-within:ring-[#7E4F1F] overflow-hidden mb-4">
+                                    <Editor
+                                        value={newApi.request_body_match || ''}
+                                        onValueChange={code => setNewApi({ ...newApi, request_body_match: code })}
+                                        highlight={code => highlight(code, languages.js)}
+                                        padding={10}
+                                        style={{
+                                            fontFamily: '"Fira code", "Fira Mono", monospace',
+                                            fontSize: 14,
+                                            minHeight: '150px',
+                                            backgroundColor: '#f9fafb'
+                                        }}
+                                        textareaClassName="focus:outline-none"
+                                        placeholder={newApi.request_match_type === 'EXACT' ? 'Enter expected JSON body...' : 'Enter JSON Schema...'}
+                                    />
+                                </div>
+                            )}
+                        </div>
+
                         <div className="mb-6">
                             <div className="flex justify-between items-center mb-1">
                                 <label className="block text-sm font-medium text-gray-700">Response Body (JSON)</label>

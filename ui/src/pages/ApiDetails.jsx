@@ -165,6 +165,39 @@ const ApiDetails = () => {
                         </div>
                         <div className="sm:col-span-2">
                             <div className="flex justify-between items-center mb-1">
+                                <label className="block text-sm font-medium text-gray-700">Request Matching</label>
+                                <select
+                                    className="rounded-md border-gray-300 shadow-sm focus:border-[#7E4F1F] focus:ring-[#7E4F1F] sm:text-sm p-1 border"
+                                    value={api.request_match_type || 'NONE'}
+                                    onChange={(e) => setApi({ ...api, request_match_type: e.target.value })}
+                                >
+                                    <option value="NONE">No Matching (Any Body)</option>
+                                    <option value="EXACT">Exact Match (JSON)</option>
+                                    <option value="SCHEMA">Schema Match (JSON Schema)</option>
+                                </select>
+                            </div>
+                            {api.request_match_type && api.request_match_type !== 'NONE' && (
+                                <div className="border border-gray-300 rounded-md shadow-sm focus-within:border-[#7E4F1F] focus-within:ring-1 focus-within:ring-[#7E4F1F] overflow-hidden mb-4">
+                                    <Editor
+                                        value={api.request_body_match || ''}
+                                        onValueChange={code => setApi({ ...api, request_body_match: code })}
+                                        highlight={code => highlight(code, languages.js)}
+                                        padding={10}
+                                        style={{
+                                            fontFamily: '"Fira code", "Fira Mono", monospace',
+                                            fontSize: 14,
+                                            minHeight: '150px',
+                                            backgroundColor: '#f9fafb'
+                                        }}
+                                        textareaClassName="focus:outline-none"
+                                        placeholder={api.request_match_type === 'EXACT' ? 'Enter expected JSON body...' : 'Enter JSON Schema...'}
+                                    />
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="sm:col-span-2">
+                            <div className="flex justify-between items-center mb-1">
                                 <label className="block text-sm font-medium text-gray-700">Response Body (JSON)</label>
                                 <div className="space-x-2">
                                     <button

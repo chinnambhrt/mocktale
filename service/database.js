@@ -27,6 +27,8 @@ db.serialize(() => {
     endpoint TEXT NOT NULL,
     response_body TEXT,
     response_status INTEGER DEFAULT 200,
+    request_match_type TEXT DEFAULT 'NONE', -- NONE, EXACT, SCHEMA
+    request_body_match TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE
   )`);
