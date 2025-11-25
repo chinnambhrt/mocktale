@@ -25,7 +25,10 @@ app.use('/apis', apisRouter);
 // Mocking Endpoint
 const Ajv = require('ajv');
 const ajv = new Ajv();
-const pathToRegexp = require('path-to-regexp');
+let pathToRegexp = require('path-to-regexp');
+if (typeof pathToRegexp !== 'function' && pathToRegexp.pathToRegexp) {
+    pathToRegexp = pathToRegexp.pathToRegexp;
+}
 
 // Helper function to match paths using v6 API
 function matchPath(pattern, path) {
