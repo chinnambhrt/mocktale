@@ -25,25 +25,43 @@ app.use('/apis', apisRouter);
 // Mocking Endpoint
 const Ajv = require('ajv');
 const ajv = new Ajv();
-let pathToRegexp = require('path-to-regexp');
-if (typeof pathToRegexp !== 'function' && pathToRegexp.pathToRegexp) {
-    pathToRegexp = pathToRegexp.pathToRegexp;
-}
+const pathToRegexp = require('path-to-regexp');
 
-// Helper function to match paths using v6 API
+// Helper function to match paths using v6 or v8 API
 function matchPath(pattern, path) {
+    // Try v8 match first (if available)
+    if (pathToRegexp.match) {
+        try {
+            const fn = pathToRegexp.match(pattern, { decode: decodeURIComponent });
+            const result = fn(path);
+            if (!result) return null;
+            return { params: result.params };
+        } catch (e) {
+            // Fallback or error handling
+        }
+    }
+
+    // Fallback to v6 (or if pathToRegexp is the function itself)
     const keys = [];
-    const regexp = pathToRegexp(pattern, keys);
-    const result = regexp.exec(path);
+    // If pathToRegexp is the function (v6), use it.
+    // If it's an object (v8) but match failed or we are here, try .pathToRegexp
+    const ptrFn = typeof pathToRegexp === 'function' ? pathToRegexp : pathToRegexp.pathToRegexp;
 
-    if (!result) return null;
+    if (typeof ptrFn === 'function') {
+        const regexp = ptrFn(pattern, keys);
+        const result = regexp.exec(path);
 
-    const params = {};
-    keys.forEach((key, index) => {
-        params[key.name] = result[index + 1];
-    });
+        if (!result) return null;
 
-    return { params };
+        const params = {};
+        keys.forEach((key, index) => {
+            params[key.name] = result[index + 1];
+        });
+
+        return { params };
+    }
+
+    return null;
 }
 
 app.all('/mock/:projectId/*', (req, res) => {
