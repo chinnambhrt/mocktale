@@ -17,8 +17,8 @@ RUN npm install --production
 # Copy service code
 COPY service/ ./
 
-# Copy built UI assets from Stage 1 to service/public
-COPY --from=ui-build /app/ui/dist ./public
+# Copy built UI assets from Stage 1 to service/static
+COPY --from=ui-build /app/ui/dist ./static
 
 # Expose the port the app runs on
 EXPOSE 3000
