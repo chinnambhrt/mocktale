@@ -22,10 +22,22 @@ const ApiDetails = () => {
         try {
             const response = await axios.get(`http://localhost:3000/apis/${id}`);
             const apiData = response.data;
-            // Ensure fields are strings for the editor
-            apiData.response_body = typeof apiData.response_body === 'string' ? apiData.response_body : JSON.stringify(apiData.response_body, null, 2);
-            apiData.required_headers = apiData.required_headers || '{}';
-            apiData.required_path_params = apiData.required_path_params || '{}';
+            // Ensure fields are formatted JSON strings
+            const formatField = (field) => {
+                try {
+                    const parsed = typeof field === 'string' ? JSON.parse(field) : field;
+                    return JSON.stringify(parsed, null, 2);
+                } catch (e) {
+                    return field || '{}';
+                }
+            };
+
+            apiData.response_body = formatField(apiData.response_body);
+            apiData.required_headers = formatField(apiData.required_headers);
+            apiData.required_path_params = formatField(apiData.required_path_params);
+            if (apiData.request_body_match) {
+                apiData.request_body_match = formatField(apiData.request_body_match);
+            }
             setApi(apiData);
 
             // Fetch Project
@@ -70,20 +82,18 @@ const ApiDetails = () => {
 
     return (
         <Layout>
-            <div>
+            <div className="flex flex-col h-[calc(100vh-4rem)]">
                 <div className="mb-6">
                     <Breadcrumbs items={[
                         { name: 'Projects', href: '/' },
                         { name: project ? project.name : 'Project', href: `/project/${api.project_id}` },
                         { name: 'Edit API' }
                     ]} />
-                    <h1 className="text-2xl font-semibold text-gray-900 mt-2" title={api.name}>
-                        {api.name.length > 20 ? api.name.substring(0, 20) + '...' : api.name}
-                    </h1>
                 </div>
 
-                <div className="bg-white shadow rounded-lg p-6">
-                    <form onSubmit={handleUpdate}>
+                <form onSubmit={handleUpdate} className="h-full flex flex-col lg:flex-row gap-8 overflow-hidden">
+                    {/* Left Column: Configuration */}
+                    <div className="bg-white shadow rounded-lg p-6 flex-1 overflow-y-auto">
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                             <input
@@ -130,14 +140,6 @@ const ApiDetails = () => {
                                 onChange={(e) => setApi({ ...api, response_status: parseInt(e.target.value) })}
                             />
                         </div>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Response Body (JSON)</label>
-                            <JsonEditor
-                                value={api.response_body}
-                                onChange={(val) => setApi({ ...api, response_body: val })}
-                                minHeight="200px"
-                            />
-                        </div>
 
                         <div className="border-t border-gray-200 pt-4 mt-4">
                             <h3 className="text-lg font-medium text-gray-900 mb-4">Request Matching (Optional)</h3>
@@ -171,11 +173,12 @@ const ApiDetails = () => {
                                     value={api.required_headers}
                                     onChange={(val) => setApi({ ...api, required_headers: val })}
                                     minHeight="150px"
+                                    className="h-full"
                                 />
                             </div>
                         </div>
 
-                        <div className="flex justify-end mt-6">
+                        <div className="flex justify-start mt-6">
                             <button
                                 type="submit"
                                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#7E4F1F] hover:bg-[#643f19] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7E4F1F]"
@@ -184,8 +187,21 @@ const ApiDetails = () => {
                                 Save Changes
                             </button>
                         </div>
-                    </form>
-                </div>
+                    </div>
+
+                    {/* Right Column: Response Body */}
+                    <div className="bg-white shadow rounded-lg p-6 flex-1 flex flex-col h-full min-h-[400px]">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Response Body (JSON)</label>
+                        <div className="flex-1 flex flex-col">
+                            <JsonEditor
+                                value={api.response_body}
+                                onChange={(val) => setApi({ ...api, response_body: val })}
+                                minHeight="100%"
+                                className="h-full"
+                            />
+                        </div>
+                    </div>
+                </form>
             </div>
         </Layout>
     );
