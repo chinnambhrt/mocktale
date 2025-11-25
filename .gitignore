@@ -2,3 +2,6 @@
 service/node_modules/
 ui/node_modules/
 node_modules/
+service/static/
+ui/dist
+**/package-lock.json
