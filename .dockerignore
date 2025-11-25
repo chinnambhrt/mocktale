@@ -1,0 +1,7 @@
+node_modules
+.git
+ui/
+ui/node_modules
+service/node_modules
+ui/dist
+service/public

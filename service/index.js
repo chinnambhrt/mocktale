@@ -12,6 +12,9 @@ const PORT = 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Routes
 const projectsRouter = require('./routes/projects');
 const apisRouter = require('./routes/apis');
@@ -142,6 +145,12 @@ app.all('/mock/:projectId/*', (req, res) => {
 // Swagger
 const swaggerDocument = YAML.load(path.join(__dirname, 'swagger.yaml'));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// The "catchall" handler: for any request that doesn't
+// match one above, send back React's index.html file.
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

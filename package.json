@@ -6,7 +6,8 @@
         "start": "concurrently \"npm run start:service\" \"npm run start:ui\"",
         "start:service": "cd service && npm start",
         "start:ui": "cd ui && npm run dev",
-        "install:all": "npm install && cd service && npm install && cd ui && npm install"
+        "install:all": "npm install && cd service && npm install && cd ui && npm install",
+        "build:all": "node build_ui.js"
     },
     "devDependencies": {
         "concurrently": "^8.2.2"
