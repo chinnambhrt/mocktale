@@ -1,33 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import { Plus, Trash2, Code, Download, Upload, ArrowLeft, Search } from 'lucide-react';
-import Editor from 'react-simple-code-editor';
-import { highlight, languages } from 'prismjs/components/prism-core';
-import 'prismjs/components/prism-clike';
-import 'prismjs/components/prism-javascript';
-import 'prismjs/themes/prism.css';
+import { Plus, Trash2, Code, Download, Upload, Search } from 'lucide-react';
 import Layout from '../components/Layout';
 import Shimmer from '../components/Shimmer';
+import Breadcrumbs from '../components/Breadcrumbs';
 
 const ProjectDetails = () => {
     const { id } = useParams();
+    const [project, setProject] = useState(null);
     const [apis, setApis] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterMethod, setFilterMethod] = useState('ALL');
 
     useEffect(() => {
-        fetchApis();
+        fetchProjectAndApis();
     }, [id]);
 
-    const fetchApis = async () => {
+    const fetchProjectAndApis = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`http://localhost:3000/apis/project/${id}`);
-            setApis(response.data);
+            const [projectRes, apisRes] = await Promise.all([
+                axios.get(`http://localhost:3000/projects/${id}`),
+                axios.get(`http://localhost:3000/apis/project/${id}`)
+            ]);
+            setProject(projectRes.data);
+            setApis(apisRes.data);
         } catch (error) {
-            console.error('Error fetching APIs:', error);
+            console.error('Error fetching data:', error);
         } finally {
             setLoading(false);
         }
@@ -44,7 +45,7 @@ const ProjectDetails = () => {
         if (!window.confirm('Are you sure you want to delete this API?')) return;
         try {
             await axios.delete(`http://localhost:3000/apis/${apiId}`);
-            fetchApis();
+            fetchProjectAndApis();
         } catch (error) {
             console.error('Error deleting API:', error);
         }
@@ -85,7 +86,7 @@ const ProjectDetails = () => {
                         response_body: body
                     });
                 }
-                fetchApis();
+                fetchProjectAndApis();
             } catch (error) {
                 console.error('Error importing APIs:', error);
                 alert('Error importing APIs');
@@ -103,33 +104,34 @@ const ProjectDetails = () => {
 
     return (
         <Layout>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                <div className="flex items-center">
-                    <Link to="/" className="mr-4 text-gray-500 hover:text-gray-700">
-                        <ArrowLeft className="w-6 h-6" />
-                    </Link>
+            <div className="mb-6">
+                <Breadcrumbs items={[
+                    { name: 'Projects', href: '/' },
+                    { name: project ? project.name : 'Project Details' }
+                ]} />
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-2 gap-4">
                     <h1 className="text-2xl font-semibold text-gray-900">Project APIs</h1>
-                </div>
-                <div className="flex space-x-3">
-                    <label className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
-                        <Upload className="w-4 h-4 mr-2" />
-                        Import
-                        <input type="file" className="hidden" accept=".json" onChange={handleImport} />
-                    </label>
-                    <button
-                        onClick={handleExport}
-                        className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                    >
-                        <Download className="w-4 h-4 mr-2" />
-                        Export
-                    </button>
-                    <Link
-                        to={`/project/${id}/apis/new`}
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#7E4F1F] hover:bg-[#643f19]"
-                    >
-                        <Plus className="w-4 h-4 mr-2" />
-                        New API
-                    </Link>
+                    <div className="flex space-x-3">
+                        <label className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
+                            <Upload className="w-4 h-4 mr-2" />
+                            Import
+                            <input type="file" className="hidden" accept=".json" onChange={handleImport} />
+                        </label>
+                        <button
+                            onClick={handleExport}
+                            className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                        >
+                            <Download className="w-4 h-4 mr-2" />
+                            Export
+                        </button>
+                        <Link
+                            to={`/project/${id}/apis/new`}
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#7E4F1F] hover:bg-[#643f19]"
+                        >
+                            <Plus className="w-4 h-4 mr-2" />
+                            New API
+                        </Link>
+                    </div>
                 </div>
             </div>
 

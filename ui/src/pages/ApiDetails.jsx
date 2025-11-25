@@ -3,14 +3,15 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Save, ArrowLeft, Play } from 'lucide-react';
 import JsonEditor from '../components/JsonEditor';
+import Breadcrumbs from '../components/Breadcrumbs';
 import Layout from '../components/Layout';
 
 const ApiDetails = () => {
-    // ... (keep imports and state setup)
     const { id } = useParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [api, setApi] = useState(null);
+    const [project, setProject] = useState(null);
 
     useEffect(() => {
         fetchApi();
@@ -25,6 +26,11 @@ const ApiDetails = () => {
             apiData.required_headers = apiData.required_headers || '{}';
             apiData.required_path_params = apiData.required_path_params || '{}';
             setApi(apiData);
+
+            // Fetch Project
+            const projectRes = await axios.get(`http://localhost:3000/projects/${apiData.project_id}`);
+            setProject(projectRes.data);
+
             setLoading(false);
         } catch (error) {
             console.error('Error fetching API:', error);
@@ -64,11 +70,15 @@ const ApiDetails = () => {
     return (
         <Layout>
             <div>
-                <div className="flex items-center mb-6">
-                    <Link to={`/project/${api.project_id}`} className="mr-4 text-gray-500 hover:text-gray-700">
-                        <ArrowLeft className="w-6 h-6" />
-                    </Link>
-                    <h1 className="text-2xl font-semibold text-gray-900">Edit API</h1>
+                <div className="mb-6">
+                    <Breadcrumbs items={[
+                        { name: 'Projects', href: '/' },
+                        { name: project ? project.name : 'Project', href: `/project/${api.project_id}` },
+                        { name: 'Edit API' }
+                    ]} />
+                    <h1 className="text-2xl font-semibold text-gray-900 mt-2" title={api.name}>
+                        {api.name.length > 20 ? api.name.substring(0, 20) + '...' : api.name}
+                    </h1>
                 </div>
 
                 <div className="bg-white shadow rounded-lg p-6">
@@ -99,109 +109,78 @@ const ApiDetails = () => {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Status Code</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Endpoint</label>
                                 <input
-                                    type="number"
+                                    type="text"
                                     required
                                     className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#7E4F1F] focus:ring-[#7E4F1F] sm:text-sm p-2 border"
-                                    value={api.response_status}
-                                    onChange={(e) => setApi({ ...api, response_status: parseInt(e.target.value) })}
+                                    value={api.endpoint}
+                                    onChange={(e) => setApi({ ...api, endpoint: e.target.value })}
                                 />
                             </div>
                         </div>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Endpoint</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Response Status</label>
                             <input
-                                type="text"
+                                type="number"
                                 required
                                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#7E4F1F] focus:ring-[#7E4F1F] sm:text-sm p-2 border"
-                                value={api.endpoint}
-                                onChange={(e) => setApi({ ...api, endpoint: e.target.value })}
+                                value={api.response_status}
+                                onChange={(e) => setApi({ ...api, response_status: parseInt(e.target.value) })}
                             />
-                            <p className="mt-1 text-xs text-gray-500">Use :param for dynamic segments (e.g., /users/:id)</p>
                         </div>
-
                         <div className="mb-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Required Headers (JSON)</label>
-                                <JsonEditor
-                                    value={api.required_headers || '{}'}
-                                    onChange={code => setApi({ ...api, required_headers: code })}
-                                    placeholder='{"Authorization": "Bearer token"}'
-                                    sample={`{
-  "Authorization": "Bearer <token>",
-  "Content-Type": "application/json"
-}`}
-                                    sampleTitle="Sample Headers"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="mb-6">
-                            <div className="flex justify-between items-center mb-1">
-                                <label className="block text-sm font-medium text-gray-700">Request Matching</label>
-                                <select
-                                    className="rounded-md border-gray-300 shadow-sm focus:border-[#7E4F1F] focus:ring-[#7E4F1F] sm:text-sm p-1 border"
-                                    value={api.request_match_type || 'NONE'}
-                                    onChange={(e) => setApi({ ...api, request_match_type: e.target.value })}
-                                >
-                                    <option value="NONE">No Matching (Any Body)</option>
-                                    <option value="EXACT">Exact Match (JSON)</option>
-                                    <option value="SCHEMA">Schema Match (JSON Schema)</option>
-                                </select>
-                            </div>
-                            {api.request_match_type && api.request_match_type !== 'NONE' && (
-                                <div className="mb-4">
-                                    <JsonEditor
-                                        value={api.request_body_match || ''}
-                                        onChange={code => setApi({ ...api, request_body_match: code })}
-                                        minHeight="150px"
-                                        placeholder={api.request_match_type === 'EXACT' ? 'Enter expected JSON body...' : 'Enter JSON Schema...'}
-                                        sample={api.request_match_type === 'EXACT' ? `{
-  "name": "John Doe",
-  "email": "john@example.com"
-}` : `{
-  "type": "object",
-  "properties": {
-    "name": { "type": "string" },
-    "age": { "type": "integer" }
-  },
-  "required": ["name"]
-}`}
-                                        sampleTitle={api.request_match_type === 'EXACT' ? 'Sample Request Body' : 'Sample JSON Schema'}
-                                    />
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="mb-6">
                             <label className="block text-sm font-medium text-gray-700 mb-1">Response Body (JSON)</label>
                             <JsonEditor
                                 value={api.response_body}
-                                onChange={code => setApi({ ...api, response_body: code })}
+                                onChange={(val) => setApi({ ...api, response_body: val })}
                                 minHeight="200px"
-                                sample={`{
-  "id": 1,
-  "name": "John Doe",
-  "email": "john@example.com",
-  "roles": ["admin", "user"]
-}`}
-                                sampleTitle="Sample Response Body"
                             />
                         </div>
-                        <div className="flex justify-end space-x-3">
-                            <Link
-                                to={`/project/${api.project_id}`}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                            >
-                                Cancel
-                            </Link>
+
+                        <div className="border-t border-gray-200 pt-4 mt-4">
+                            <h3 className="text-lg font-medium text-gray-900 mb-4">Request Matching (Optional)</h3>
+
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Match Type</label>
+                                <select
+                                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#7E4F1F] focus:ring-[#7E4F1F] sm:text-sm p-2 border"
+                                    value={api.request_match_type || 'NONE'}
+                                    onChange={(e) => setApi({ ...api, request_match_type: e.target.value })}
+                                >
+                                    <option value="NONE">None (Match any request to endpoint)</option>
+                                    <option value="PARTIAL_BODY">Partial Body Match (JSON)</option>
+                                </select>
+                            </div>
+
+                            {api.request_match_type === 'PARTIAL_BODY' && (
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Request Body Match (JSON)</label>
+                                    <JsonEditor
+                                        value={typeof api.request_body_match === 'string' ? api.request_body_match : JSON.stringify(api.request_body_match, null, 2)}
+                                        onChange={(val) => setApi({ ...api, request_body_match: val })}
+                                        minHeight="150px"
+                                    />
+                                </div>
+                            )}
+
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Required Headers (JSON)</label>
+                                <JsonEditor
+                                    value={api.required_headers}
+                                    onChange={(val) => setApi({ ...api, required_headers: val })}
+                                    minHeight="150px"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end mt-6">
                             <button
                                 type="submit"
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#7E4F1F] hover:bg-[#643f19]"
+                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#7E4F1F] hover:bg-[#643f19] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7E4F1F]"
                             >
                                 <Save className="w-4 h-4 mr-2" />
-                                Update API
+                                Save Changes
                             </button>
                         </div>
                     </form>
