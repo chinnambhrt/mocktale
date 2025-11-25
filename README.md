@@ -83,4 +83,3 @@ Use it. Break it. Fix it. Make it better. That's what we do.
 
 And if you find a bug? It’s not a bug. It’s an undocumented feature testing your ability to adapt.
 
-**— Tony**
