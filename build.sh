@@ -95,6 +95,6 @@ cd ..
 
 # 7. Build Container Image
 printf "\033[0;36mBuilding Container Image with $CONTAINER_TOOL...\033[0m\n"
-"$CONTAINER_TOOL" build -t "mocktale:$IMAGE_TAG" .
+"$CONTAINER_TOOL" build -t "mocktale:$IMAGE_TAG" -t "mocktale:latest" .
 
-printf "\033[0;32mBuild Complete! Image: mocktale:$IMAGE_TAG\033[0m\n"
+printf "\033[0;32mBuild Complete! Images: mocktale:$IMAGE_TAG, mocktale:latest\033[0m\n"
