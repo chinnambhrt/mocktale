@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import { Plus, Trash2, Code, Download, Upload, Search } from 'lucide-react';
+import { Plus, Trash2, Code, Download, Upload, Search, Play } from 'lucide-react';
 import Layout from '../components/Layout';
 import Shimmer from '../components/Shimmer';
 import Breadcrumbs from '../components/Breadcrumbs';
+import NotFound from './NotFound';
 
 const ProjectDetails = () => {
     const { id } = useParams();
@@ -101,6 +102,8 @@ const ProjectDetails = () => {
         DELETE: 'bg-red-100 text-red-800',
         PATCH: 'bg-purple-100 text-purple-800',
     };
+
+    if (!loading && !project) return <NotFound />;
 
     return (
         <Layout>
@@ -212,6 +215,13 @@ const ProjectDetails = () => {
                                             >
                                                 <Code className="w-5 h-5" />
                                             </a>
+                                            <Link
+                                                to={`/api/${api.id}/test`}
+                                                className="text-gray-400 hover:text-green-600 transition-colors"
+                                                title="Test API"
+                                            >
+                                                <Play className="w-5 h-5" />
+                                            </Link>
                                             <button
                                                 onClick={() => handleDeleteApi(api.id)}
                                                 className="text-gray-400 hover:text-red-600 transition-colors"
@@ -225,8 +235,8 @@ const ProjectDetails = () => {
                             ))}
                             {filteredApis.length === 0 && (
                                 <tr>
-                                    <td colSpan="4" className="px-6 py-10 text-center text-gray-500">
-                                        No APIs found matching your filters.
+                                    <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-500">
+                                        No APIs found. Create one to get started!
                                     </td>
                                 </tr>
                             )}

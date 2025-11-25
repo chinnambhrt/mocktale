@@ -5,6 +5,8 @@ import ProjectDetails from './pages/ProjectDetails';
 import ApiDetails from './pages/ApiDetails';
 import NewProject from './pages/NewProject';
 import NewApi from './pages/NewApi';
+import TestApi from './pages/TestApi';
+import NotFound from './pages/NotFound';
 
 function App() {
     return (
@@ -15,6 +17,8 @@ function App() {
                 <Route path="/project/:id" element={<ProjectDetails />} />
                 <Route path="/project/:projectId/apis/new" element={<NewApi />} />
                 <Route path="/api/:id" element={<ApiDetails />} />
+                <Route path="/api/:id/test" element={<TestApi />} />
+                <Route path="*" element={<NotFound />} />
             </Routes>
         </Router>
     );

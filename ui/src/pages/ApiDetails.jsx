@@ -5,6 +5,7 @@ import { Save, ArrowLeft, Play } from 'lucide-react';
 import JsonEditor from '../components/JsonEditor';
 import Breadcrumbs from '../components/Breadcrumbs';
 import Layout from '../components/Layout';
+import NotFound from './NotFound';
 
 const ApiDetails = () => {
     const { id } = useParams();
@@ -65,7 +66,7 @@ const ApiDetails = () => {
     };
 
     if (loading) return <div className="p-10 text-center">Loading...</div>;
-    if (!api) return <div className="p-10 text-center">API not found</div>;
+    if (!api) return <NotFound />;
 
     return (
         <Layout>
