@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import { Plus, Trash2, Code, Download, Upload, Search, Play } from 'lucide-react';
+import { Plus, Trash2, Code, Download, Upload, Search, Play, Copy, Check } from 'lucide-react';
 import Layout from '../components/Layout';
 import Shimmer from '../components/Shimmer';
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -14,6 +14,7 @@ const ProjectDetails = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterMethod, setFilterMethod] = useState('ALL');
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         fetchProjectAndApis();
@@ -95,6 +96,13 @@ const ProjectDetails = () => {
         };
     };
 
+    const handleCopy = () => {
+        const url = `http://localhost:3000/mock/${id}`;
+        navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
     const methodColors = {
         GET: 'bg-green-100 text-green-800',
         POST: 'bg-blue-100 text-blue-800',
@@ -113,7 +121,21 @@ const ProjectDetails = () => {
                     { name: project ? project.name : 'Project Details' }
                 ]} />
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-2 gap-4">
-                    <h1 className="text-2xl font-semibold text-gray-900">Project APIs</h1>
+                    <div className="flex flex-col gap-2">
+                        <h1 className="text-2xl font-semibold text-gray-900">Project APIs</h1>
+                        <div className="flex items-center space-x-2 bg-gray-100 p-2 rounded-md border border-gray-200 w-fit">
+                            <code className="text-sm text-gray-600 font-mono">
+                                {`http://localhost:3000/mock/${id}`}
+                            </code>
+                            <button
+                                onClick={handleCopy}
+                                className="p-1 hover:bg-gray-200 rounded text-gray-500 hover:text-gray-700 transition-colors"
+                                title="Copy URL"
+                            >
+                                {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                            </button>
+                        </div>
+                    </div>
                     <div className="flex space-x-3">
                         <label className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
                             <Upload className="w-4 h-4 mr-2" />
