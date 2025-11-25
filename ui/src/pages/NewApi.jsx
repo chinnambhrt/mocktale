@@ -52,7 +52,7 @@ const NewApi = () => {
 
     return (
         <Layout>
-            <div className="max-w-3xl mx-auto">
+            <div className='okbe'>
                 <div className="flex items-center mb-6">
                     <Link to={`/project/${projectId}`} className="mr-4 text-gray-500 hover:text-gray-700">
                         <ArrowLeft className="w-6 h-6" />
@@ -133,7 +133,7 @@ const NewApi = () => {
 
                     <div className="bg-white shadow rounded-lg p-6 mb-6">
                         <Accordion title="Request Validation & Matching" defaultOpen={false}>
-                            <div className="grid grid-cols-2 gap-4 mb-4">
+                            <div className="mb-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Required Headers (JSON)</label>
                                     <JsonEditor

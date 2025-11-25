@@ -4,7 +4,7 @@ const path = require('path');
 
 const uiDir = path.join(__dirname, 'ui');
 const serviceDir = path.join(__dirname, 'service');
-const publicDir = path.join(serviceDir, 'public');
+const publicDir = path.join(serviceDir, 'static');
 
 console.log('Building UI...');
 

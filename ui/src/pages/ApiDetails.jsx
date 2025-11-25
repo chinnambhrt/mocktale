@@ -63,7 +63,7 @@ const ApiDetails = () => {
 
     return (
         <Layout>
-            <div className="max-w-3xl mx-auto">
+            <div>
                 <div className="flex items-center mb-6">
                     <Link to={`/project/${api.project_id}`} className="mr-4 text-gray-500 hover:text-gray-700">
                         <ArrowLeft className="w-6 h-6" />
@@ -121,7 +121,7 @@ const ApiDetails = () => {
                             <p className="mt-1 text-xs text-gray-500">Use :param for dynamic segments (e.g., /users/:id)</p>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="mb-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Required Headers (JSON)</label>
                                 <JsonEditor
@@ -133,19 +133,6 @@ const ApiDetails = () => {
   "Content-Type": "application/json"
 }`}
                                     sampleTitle="Sample Headers"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Required Path Params (JSON)</label>
-                                <JsonEditor
-                                    value={api.required_path_params || '{}'}
-                                    onChange={code => setApi({ ...api, required_path_params: code })}
-                                    placeholder='{"id": "123"}'
-                                    sample={`{
-  "id": "123",
-  "category": "books"
-}`}
-                                    sampleTitle="Sample Path Params"
                                 />
                             </div>
                         </div>
