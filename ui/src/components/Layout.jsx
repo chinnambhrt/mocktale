@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, BookOpen } from 'lucide-react';
+import { LayoutDashboard, Github } from 'lucide-react';
 
 const Layout = ({ children }) => {
     const location = useLocation();
@@ -27,13 +27,13 @@ const Layout = ({ children }) => {
                                     Projects
                                 </Link>
                                 <a
-                                    href="http://localhost:3000/api-docs"
+                                    href="https://github.com/chinnambhrt/mocktale"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
                                 >
-                                    <BookOpen className="w-4 h-4 mr-2" />
-                                    API Docs
+                                    <Github className="w-4 h-4 mr-2" />
+                                    GitHub
                                 </a>
                             </div>
                         </div>
