@@ -29,12 +29,12 @@ const TestApi = () => {
 
     const fetchApi = async () => {
         try {
-            const res = await axios.get(`http://localhost:3000/apis/${id}`);
+            const res = await axios.get(`/apis/${id}`);
             setApi(res.data);
 
             // Fetch Project
             try {
-                const projectRes = await axios.get(`http://localhost:3000/projects/${res.data.project_id}`);
+                const projectRes = await axios.get(`/projects/${res.data.project_id}`);
                 setProject(projectRes.data);
             } catch (err) {
                 console.error('Error fetching project:', err);
@@ -78,7 +78,7 @@ const TestApi = () => {
 
         try {
             // Construct URL
-            let url = `http://localhost:3000/mock/${api.project_id}${api.endpoint}`;
+            let url = `${window.location.origin}/mock/${api.project_id}${api.endpoint}`;
             Object.keys(pathParams).forEach(key => {
                 url = url.replace(`:${key}`, pathParams[key]);
             });
@@ -262,7 +262,7 @@ const TestApi = () => {
                                 <span className="text-gray-500 text-sm mr-1">{api.method}</span>
                                 <span className="text-gray-900 text-sm font-mono break-all">
                                     {(() => {
-                                        let url = `http://localhost:3000/mock/${api.project_id}${api.endpoint}`;
+                                        let url = `${window.location.origin}/mock/${api.project_id}${api.endpoint}`;
                                         Object.keys(pathParams).forEach(key => {
                                             url = url.replace(`:${key}`, pathParams[key] || `:${key}`);
                                         });
@@ -319,7 +319,7 @@ const TestApi = () => {
                             <div className="flex-1 flex flex-col">
                                 <div className="flex space-x-4 mb-4 text-sm">
                                     <span className={`px-2 py-1 rounded font-semibold ${response.status >= 200 && response.status < 300 ? 'bg-green-100 text-green-800' :
-                                            response.status >= 400 ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
+                                        response.status >= 400 ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
                                         }`}>
                                         {response.status} {response.statusText}
                                     </span>

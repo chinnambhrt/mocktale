@@ -21,7 +21,7 @@ const ApiDetails = () => {
 
     const fetchApi = async () => {
         try {
-            const response = await axios.get(`http://localhost:3000/apis/${id}`);
+            const response = await axios.get(`/apis/${id}`);
             const apiData = response.data;
             // Ensure fields are formatted JSON strings
             const formatField = (field) => {
@@ -42,7 +42,7 @@ const ApiDetails = () => {
             setApi(apiData);
 
             // Fetch Project
-            const projectRes = await axios.get(`http://localhost:3000/projects/${apiData.project_id}`);
+            const projectRes = await axios.get(`/projects/${apiData.project_id}`);
             setProject(projectRes.data);
 
             setLoading(false);
@@ -65,7 +65,7 @@ const ApiDetails = () => {
                 return;
             }
 
-            await axios.put(`http://localhost:3000/apis/${id}`, {
+            await axios.put(`/apis/${id}`, {
                 ...api,
                 response_body: parsedBody,
                 required_headers: parsedHeaders,
@@ -79,7 +79,7 @@ const ApiDetails = () => {
     };
 
     const handleCopy = () => {
-        const url = `http://localhost:3000/mock/${api.project_id}${api.endpoint}`;
+        const url = `${window.location.origin}/mock/${api.project_id}${api.endpoint}`;
         navigator.clipboard.writeText(url);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
@@ -103,7 +103,7 @@ const ApiDetails = () => {
                         </h1>
                         <div className="flex items-center space-x-2 bg-gray-100 p-2 rounded-md border border-gray-200">
                             <code className="text-sm text-gray-600 font-mono">
-                                {`http://localhost:3000/mock/${api.project_id}${api.endpoint}`}
+                                {`${window.location.origin}/mock/${api.project_id}${api.endpoint}`}
                             </code>
                             <button
                                 onClick={handleCopy}

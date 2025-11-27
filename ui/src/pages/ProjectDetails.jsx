@@ -24,8 +24,8 @@ const ProjectDetails = () => {
         setLoading(true);
         try {
             const [projectRes, apisRes] = await Promise.all([
-                axios.get(`http://localhost:3000/projects/${id}`),
-                axios.get(`http://localhost:3000/apis/project/${id}`)
+                axios.get(`/projects/${id}`),
+                axios.get(`/apis/project/${id}`)
             ]);
             setProject(projectRes.data);
             setApis(apisRes.data);
@@ -46,7 +46,7 @@ const ProjectDetails = () => {
     const handleDeleteApi = async (apiId) => {
         if (!window.confirm('Are you sure you want to delete this API?')) return;
         try {
-            await axios.delete(`http://localhost:3000/apis/${apiId}`);
+            await axios.delete(`/apis/${apiId}`);
             fetchProjectAndApis();
         } catch (error) {
             console.error('Error deleting API:', error);
@@ -82,7 +82,7 @@ const ProjectDetails = () => {
                         }
                     }
 
-                    await axios.post('http://localhost:3000/apis', {
+                    await axios.post('/apis', {
                         ...apiData,
                         project_id: id,
                         response_body: body
@@ -97,7 +97,7 @@ const ProjectDetails = () => {
     };
 
     const handleCopy = () => {
-        const url = `http://localhost:3000/mock/${id}`;
+        const url = `${window.location.origin}/mock/${id}`;
         navigator.clipboard.writeText(url);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
@@ -125,7 +125,7 @@ const ProjectDetails = () => {
                         <h1 className="text-2xl font-semibold text-gray-900">Project APIs</h1>
                         <div className="flex items-center space-x-2 bg-gray-100 p-2 rounded-md border border-gray-200 w-fit">
                             <code className="text-sm text-gray-600 font-mono">
-                                {`http://localhost:3000/mock/${id}`}
+                                {`${window.location.origin}/mock/${id}`}
                             </code>
                             <button
                                 onClick={handleCopy}
@@ -229,7 +229,7 @@ const ProjectDetails = () => {
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <div className="flex items-center justify-end space-x-4">
                                             <a
-                                                href={`http://localhost:3000/mock/${id}${api.endpoint}`}
+                                                href={`${window.location.origin}/mock/${id}${api.endpoint}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="text-gray-400 hover:text-[#7E4F1F] transition-colors"

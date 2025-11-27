@@ -18,7 +18,7 @@ const Dashboard = () => {
     const fetchProjects = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('http://localhost:3000/projects');
+            const response = await axios.get('/projects');
             setProjects(response.data);
         } catch (error) {
             console.error('Error fetching projects:', error);

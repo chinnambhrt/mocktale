@@ -20,19 +20,6 @@ const NewApi = () => {
         response_body: '{}',
         request_match_type: 'NONE',
         request_body_match: '',
-        required_headers: '{}'
-    });
-
-    React.useEffect(() => {
-        const fetchProject = async () => {
-            try {
-                const res = await axios.get(`http://localhost:3000/projects/${projectId}`);
-                setProject(res.data);
-            } catch (err) {
-                console.error('Error fetching project:', err);
-            }
-        };
-        fetchProject();
     }, [projectId]);
 
     const handleSubmit = async (e) => {
@@ -49,7 +36,7 @@ const NewApi = () => {
                 return;
             }
 
-            await axios.post('http://localhost:3000/apis', {
+            await axios.post('/apis', {
                 project_id: projectId,
                 ...newApi,
                 response_body: parsedBody,

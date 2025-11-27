@@ -13,7 +13,7 @@ const NewProject = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            await axios.post('http://localhost:3000/projects', project);
+            await axios.post('/projects', project);
             navigate('/');
         } catch (error) {
             console.error('Error creating project:', error);
